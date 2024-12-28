@@ -1,0 +1,17 @@
+asgiref==3.8.1
+beautifulsoup4==4.12.3
+certifi==2024.12.14
+charset-normalizer==3.4.1
+Django==5.1.4
+idna==3.10
+joblib==1.4.2
+numpy==2.2.1
+requests==2.32.3
+scikit-learn==1.6.0
+scipy==1.14.1
+setuptools==75.6.0
+soupsieve==2.6
+sqlparse==0.5.3
+threadpoolctl==3.5.0
+urllib3==2.3.0
+Whoosh==2.7.4
