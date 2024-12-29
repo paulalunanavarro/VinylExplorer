@@ -1,0 +1,24 @@
+<h1>Búsqueda de Vinilos Por Artista</h1>
+<form method="get" action="{% url 'buscar_por_artista' %}">
+    <input type="text" name="consulta" value="{{ consulta }}" placeholder="Escribe el título del artista">
+    <button type="submit">Buscar</button>
+</form>
+
+{% if resultados %}
+    <h2>Resultados</h2>
+    <ul>
+        {% for vinilo in resultados %}
+            <li>
+                <strong>{{ vinilo.titulo }}</strong><br>
+                <strong>Artista:</strong> {{ vinilo.artista }}<br>
+                <strong>Precio:</strong> {{ vinilo.precio }}<br>
+                <strong>Descripción:</strong> {{ vinilo.descripcion }}<br>
+                <img src="{{ vinilo.imagen }}" alt="Imagen del vinilo" width="150"><br>
+            </li>
+            <!-- Delimitador entre los resultados -->
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No se encontraron resultados para "{{ consulta }}"</p>
+{% endif %}

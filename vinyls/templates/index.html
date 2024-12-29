@@ -12,5 +12,15 @@
         {% csrf_token %}
         <button type="submit">Cargar Base de Datos</button>
     </form>
+    <p>Haz clic en el botón para buscar vinilos.</p>
+    <form action="{% url 'buscar_vinilos' %}" method="get">
+        <input type="text" name="consulta" placeholder="Escribe el título del vinilo">
+        <button type="submit">Buscar</button>
+    </form>
+    <p>Haz clic en el botón para buscar vinilos por artista.</p>
+    <form action="{% url 'buscar_por_artista' %}" method="get">
+        <input type="text" name="consulta" placeholder="Escribe el título del artista">
+        <button type="submit">Buscar</button>
+    </form>
 </body>
 </html>

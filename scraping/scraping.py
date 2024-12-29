@@ -78,6 +78,7 @@ def extraer_vinilos_apparell():
                 print(f"Error al procesar un producto: {e}")
     return vinilos
 
+
 # Extraccion de datos para la web de marilians
 def extraer_vinilos_marilians():
     vinilos = []

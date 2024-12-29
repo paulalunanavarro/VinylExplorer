@@ -6,8 +6,9 @@ warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 from datetime import datetime
 from whoosh.fields import Schema, TEXT, DATETIME
-from whoosh.index import create_in
+from whoosh.index import create_in, open_dir
 from whoosh.qparser import QueryParser
+
 
 
 # Añadir la carpeta raíz del proyecto al sys.path
@@ -27,19 +28,17 @@ def almacenar_datos():
         fecha_indexado=DATETIME(stored=True)
     )
     
-    # Crear el índice (elimina si ya existe para un reinicio limpio)
+    # Crear el índice
     if os.path.exists("Index"):
         shutil.rmtree("Index")
     os.mkdir("Index")
     ix = create_in("Index", schema=schema)
     writer = ix.writer()
 
-    # Obtener datos de las funciones de scraping
     vinilos_apparell = extraer_vinilos_apparell()
     vinilos_marilians = extraer_vinilos_marilians()
     vinilos = vinilos_apparell + vinilos_marilians
 
-    # Indexar los datos
     for vinilo in vinilos:
         writer.add_document(
             titulo=vinilo["titulo"],
@@ -54,24 +53,49 @@ def almacenar_datos():
     print(f"Se han indexado {len(vinilos)} vinilos en el índice.")
 
 
-# Realiza busquedas en el indice por el titulo del vinilo
-def buscar_vinilos(consulta):
-    from whoosh.index import open_dir
-
+def buscar_vinilos_por_titulo(consulta):
     ix = open_dir("Index")
+    resultados = []  
+    
     with ix.searcher() as searcher:
         query = QueryParser("titulo", ix.schema).parse(consulta)
         results = searcher.search(query, limit=10)
+        
         for result in results:
-            print("Título:", result["titulo"])
-            print("Artista:", result["artista"])
-            print("Precio:", result["precio"])
-            print("Descripción:", result["descripcion"])
-            print("Fecha indexado:", result["fecha_indexado"])
-            print("-" * 40)
+            resultados.append({
+                "titulo": result["titulo"],
+                "artista": result["artista"],
+                "precio": result["precio"],
+                "descripcion": result["descripcion"],
+                "imagen": result["imagen"],
+                "fecha_indexado": result["fecha_indexado"],
+            })
+    
+    return resultados 
+
+
+def buscar_vinilos_por_artista(consulta):
+    ix = open_dir("Index")
+    resultados = []  
+    
+    with ix.searcher() as searcher:
+        query = QueryParser("artista", ix.schema).parse(consulta)
+        results = searcher.search(query, limit=10)
+        
+        for result in results:
+            resultados.append({
+                "titulo": result["titulo"],
+                "artista": result["artista"],
+                "precio": result["precio"],
+                "descripcion": result["descripcion"],
+                "imagen": result["imagen"],
+                "fecha_indexado": result["fecha_indexado"],
+            })
+    
+    return resultados 
 
 
 if __name__ == "__main__":
     # almacenar_datos()
     consulta = input("Introduce una consulta para buscar vinilos: ")
-    buscar_vinilos(consulta)
+    buscar_vinilos_por_titulo(consulta)
