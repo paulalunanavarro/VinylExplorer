@@ -1,10 +1,10 @@
+
 import os
 import django
-import urllib.request
-import time
 from bs4 import BeautifulSoup
 import sys
 from django.db import transaction
+import urllib.request
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vinyls_project.settings')
@@ -64,18 +64,29 @@ def extraer_vinilos_apparell():
                         descripcion += p.text.strip() + "\n"
                 else:
                     descripcion = "Descripción no disponible"
+                    
+                # Determinar si está agotado o en stock
+                stock_tag = detalle_soup.find("button", class_="button-round")
+                stock = "Información no disponible"  
+                if stock_tag:
+                    button_text = stock_tag.find("span", class_="button__text").text.strip()
+                    stock = button_text  
+                
+                print(f"Producto: {titulo}, Stock: {stock}")
                 
                 vinilos.append({
                     "titulo": titulo,
                     "precio": precio,
                     "imagen": imagen,
                     "artista": artista,
-                    "descripcion": descripcion
+                    "descripcion": descripcion,
+                    "stock": stock,
+                    "enlace": link,
                 })
                 
-                time.sleep(1)  
             except Exception as e:
                 print(f"Error al procesar un producto: {e}")
+                
     return vinilos
 
 
@@ -129,15 +140,21 @@ def extraer_vinilos_marilians():
                 else:
                     descripcion = "Sección de características no encontrada"
 
+                # Stock
+                stock_tag = detalle_soup.find("span", id="product-availability")
+                stock = stock_tag.text.strip() if stock_tag else "Sin información de stock"
+                print(f"Stock encontrado: {stock}")
+                
                 vinilos.append({
                     "titulo": titulo,
                     "precio": precio,
                     "imagen": imagen,
                     "artista": artista,
-                    "descripcion": descripcion
+                    "descripcion": descripcion,
+                    "stock": stock,
+                    "enlace": link,
                 })
                 
-                time.sleep(1) 
             except Exception as e:
                 print(f"Error al procesar un producto: {e}")
     
@@ -152,14 +169,16 @@ def almacenar_bd():
     vinilos_marilians = extraer_vinilos_marilians()
 
     with transaction.atomic():
-        for vinilo_data in vinilos_apparell and vinilos_marilians:
+        for vinilo_data in vinilos_apparell + vinilos_marilians:
             Vinilo.objects.update_or_create(
                 titulo=vinilo_data["titulo"],
                 defaults={
                     "precio": vinilo_data["precio"],
                     "artista": vinilo_data["artista"],
                     "descripcion": vinilo_data["descripcion"],
-                    "imagen": vinilo_data["imagen"]
+                    "imagen": vinilo_data["imagen"],
+                    "stock": vinilo_data["stock"],
+                    "enlace": vinilo_data["enlace"],
                 }
             )
 

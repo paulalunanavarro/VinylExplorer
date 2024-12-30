@@ -1,15 +1,11 @@
 import os
 import sys
 import shutil
-import warnings 
-warnings.filterwarnings("ignore", category=SyntaxWarning)
-
+import warnings
 from datetime import datetime
 from whoosh.fields import Schema, TEXT, DATETIME
 from whoosh.index import create_in, open_dir
 from whoosh.qparser import QueryParser
-
-
 
 # Añadir la carpeta raíz del proyecto al sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -25,6 +21,8 @@ def almacenar_datos():
         artista=TEXT(stored=True),
         descripcion=TEXT(stored=True),
         imagen=TEXT(stored=True),
+        stock=TEXT(stored=True),
+        enlace=TEXT(stored=True),
         fecha_indexado=DATETIME(stored=True)
     )
     
@@ -46,6 +44,8 @@ def almacenar_datos():
             artista=vinilo["artista"],
             descripcion=vinilo["descripcion"],
             imagen=vinilo["imagen"],
+            stock=vinilo["stock"],
+            enlace=vinilo["enlace"],
             fecha_indexado=datetime.now()
         )
     
@@ -68,10 +68,12 @@ def buscar_vinilos_por_titulo(consulta):
                 "precio": result["precio"],
                 "descripcion": result["descripcion"],
                 "imagen": result["imagen"],
+                "stock": result["stock"],
+                "enlace": result["enlace"],
                 "fecha_indexado": result["fecha_indexado"],
             })
     
-    return resultados 
+    return resultados
 
 
 def buscar_vinilos_por_artista(consulta):
@@ -89,13 +91,60 @@ def buscar_vinilos_por_artista(consulta):
                 "precio": result["precio"],
                 "descripcion": result["descripcion"],
                 "imagen": result["imagen"],
+                "stock": result["stock"],
+                "enlace": result["enlace"],
                 "fecha_indexado": result["fecha_indexado"],
             })
     
-    return resultados 
+    return resultados
+
+
+def obtener_todos_los_vinilos():
+    ix = open_dir("Index")
+    vinilos = []
+    
+    with ix.searcher() as searcher:
+        # Obtenemos todos los documentos sin ningún filtro (limit=None)
+        results = searcher.all_stored_fields()
+        
+        for result in results:
+            vinilos.append({
+                "titulo": result["titulo"],
+                "precio": result["precio"],
+                "imagen": result["imagen"],
+            })
+    
+    return vinilos
+
+
+def obtener_vinilos_por_precio(min_precio=None, max_precio=None):
+    ix = open_dir("Index")
+    vinilos = []
+    
+    with ix.searcher() as searcher:
+        # Obtener todos los documentos sin ningún filtro (limit=None)
+        results = searcher.all_stored_fields()
+        
+        for result in results:
+            precio = float(result["precio"].replace('€', '').replace(',', '.').
+                           strip())
+            
+            # Filtrar vinilos por precio si se especifican los límites
+            if min_precio and precio < min_precio:
+                continue
+            if max_precio and precio > max_precio:
+                continue
+
+            vinilos.append({
+                "titulo": result["titulo"],
+                "precio": result["precio"],
+                "imagen": result["imagen"],
+            })
+    
+    return vinilos
 
 
 if __name__ == "__main__":
-    # almacenar_datos()
-    consulta = input("Introduce una consulta para buscar vinilos: ")
-    buscar_vinilos_por_titulo(consulta)
+    almacenar_datos()  # Descomentar si necesitas indexar los datos
+    consulta = input("Introduce una consulta para buscar vinilos por título: ")
+    resultados = buscar_vinilos_por_titulo(consulta)

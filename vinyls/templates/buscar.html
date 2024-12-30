@@ -1,4 +1,3 @@
-
 {% block content %}
     <h1>Búsqueda de Vinilos Por Titulo</h1>
     <form method="get" action="{% url 'buscar_vinilos' %}">
@@ -15,8 +14,13 @@
                     <strong>Artista:</strong> {{ vinilo.artista }}<br>
                     <strong>Precio:</strong> {{ vinilo.precio }}<br>
                     <strong>Descripción:</strong> {{ vinilo.descripcion }}<br>
+                    <strong>Stock:</strong> {{ vinilo.stock }}<br>  <!-- Se agregó stock aquí -->
                     <strong>Imagen:</strong><br>
                     <img src="{{ vinilo.imagen }}" alt="Imagen del vinilo" width="150"><br>
+                    <!-- Botón de compra -->
+                    <a href="{{ vinilo.enlace }}" target="_blank">
+                        <button type="button">Comprar Producto</button>
+                    </a>
                 </li>
                 <hr>
             {% endfor %}
