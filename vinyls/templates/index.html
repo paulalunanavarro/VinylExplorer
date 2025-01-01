@@ -4,19 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vinyl Explorer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            // Mostrar notificación
+            function showNotification(message, success=true) {
+                const notification = $('#notification');
+                notification.text(message);
+                notification.css('background-color', success ? '#4caf50' : '#f44336');
+                notification.fadeIn();
+                setTimeout(function() {
+                    notification.fadeOut();
+                }, 3000);
+            }
+
+            // Enviar formulario con AJAX
+            $('form#cargar_bd_form').submit(function(event) {
+                event.preventDefault();  // Detener el envío del formulario
+                
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            showNotification(response.message, true);
+                        } else {
+                            showNotification(response.message, false);
+                        }
+                    },
+                    error: function() {
+                        showNotification('Hubo un error al realizar la solicitud.', false);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <h1>Vinyl Explorer</h1>
     <p>Haz clic en el botón para cargar la base de datos con los datos de los vinilos.</p>
-    <form action="{% url 'cargar_bd' %}" method="post">
+
+    <!-- Formulario con AJAX -->
+    <form id="cargar_bd_form" action="{% url 'cargar_bd' %}" method="post">
         {% csrf_token %}
         <button type="submit">Cargar Base de Datos</button>
     </form>
+
+    <!-- Notificación -->
+    <div class="notification" id="notification"></div>
+
     <p>Haz clic en el botón para buscar vinilos.</p>
     <form action="{% url 'buscar_vinilos' %}" method="get">
         <input type="text" name="consulta" placeholder="Escribe el título del vinilo">
         <button type="submit">Buscar</button>
     </form>
+
     <p>Haz clic en el botón para buscar vinilos por artista.</p>
     <form action="{% url 'buscar_por_artista' %}" method="get">
         <input type="text" name="consulta" placeholder="Escribe el título del artista">

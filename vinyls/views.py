@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import JsonResponse
 from scraping.scraping import almacenar_bd
 from . import indice
 
@@ -39,11 +39,11 @@ def cargar_bd(request):
         print("Cargando datos en la base de datos...")  
         almacenar_bd()  
         print("Base de datos cargada correctamente.")  
-        return HttpResponse("Base de datos cargada correctamente.")
+        return JsonResponse({'status': 'success', 'message': 'Base de datos cargada correctamente.'})
     except Exception as e:
         print(f"Error al cargar la base de datos: {e}")
-        return HttpResponse(f"Ocurrió un error: {e}")
-    
+        return JsonResponse({'status': 'error', 'message': f'Ocurrió un error: {e}'})
+
 
 def buscar_vinilos(request):
     consulta = request.GET.get('consulta', '').strip()
