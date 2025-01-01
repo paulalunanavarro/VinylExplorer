@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vinyl Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .notification {
@@ -20,7 +21,6 @@
     </style>
     <script>
         $(document).ready(function () {
-            // Mostrar notificación
             function showNotification(message, success = true) {
                 const notification = $('#notification');
                 notification.text(message);
@@ -31,9 +31,8 @@
                 }, 3000);
             }
 
-            // Enviar formulario con AJAX
             $('form#cargar_bd_form').submit(function (event) {
-                event.preventDefault(); // Detener el envío del formulario
+                event.preventDefault();
                 
                 $.ajax({
                     type: 'POST',
@@ -55,65 +54,107 @@
     </script>
 </head>
 <body>
-    <h1>Vinyl Explorer</h1>
-    <p>Haz clic en el botón para cargar la base de datos con los datos de los vinilos.</p>
-
-    <!-- Formulario con AJAX -->
-    <form id="cargar_bd_form" action="{% url 'cargar_bd' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Cargar Base de Datos</button>
-    </form>
-
-    <!-- Notificación -->
-    <div class="notification" id="notification"></div>
-
-    <h2>Filtrar vinilos</h2>
-    <form method="get" action="">
-        <label for="min_precio">Precio mínimo (€):</label>
-        <input type="number" name="min_precio" id="min_precio" value="{{ min_precio }}" placeholder="Mínimo">
-
-        <label for="max_precio">Precio máximo (€):</label>
-        <input type="number" name="max_precio" id="max_precio" value="{{ max_precio }}" placeholder="Máximo">
-
-        <label for="stock">Disponibilidad:</label>
-        <select name="stock" id="stock">
-            <option value="" {% if stock == "" %}selected{% endif %}>Todos</option>
-            <option value="disponible" {% if stock == "disponible" %}selected{% endif %}>Disponible</option>
-            <option value="no_disponible" {% if stock == "no_disponible" %}selected{% endif %}>No disponible</option>
-        </select>
-
-        <label for="orden">Ordenar:</label>
-        <select name="orden" id="orden">
-            <option value="" {% if orden == "" %}selected{% endif %}>Sin ordenar</option>
-            <option value="asc" {% if orden == "asc" %}selected{% endif %}>Ascendente</option>
-            <option value="desc" {% if orden == "desc" %}selected{% endif %}>Descendente</option>
-        </select>
-
-        <button type="submit">Aplicar filtros</button>
-    </form>
-
-    <h2>Resultados</h2>
-    <div>
-        {% for vinilo in vinilos %}
-            <div class="vinilo">
-                <strong>{{ vinilo.titulo }}</strong>
-                <p><strong>Precio:</strong> {{ vinilo.precio }} €</p>
-                {% if vinilo.stock == "Agotado" %}
-                    <p><strong>Estado:</strong> No disponible</p>
-                {% else %}
-                    <p><strong>Estado:</strong> Disponible</p>
-                {% endif %}
-                {% if vinilo.enlace %}
-                    <a href="{{ vinilo.enlace }}" target="_blank">
-                        <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" width="100">
-                    </a>
-                {% else %}
-                    <p>No hay enlace disponible para este vinilo.</p>
-                {% endif %}
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Vinyl Explorer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                
+                </ul>
             </div>
-        {% empty %}
-            <p>No hay vinilos que coincidan con los filtros aplicados.</p>
-        {% endfor %}
-    </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Vinyl Explorer</h1>
+        <p>Haz clic en el botón para cargar la base de datos con los datos de los vinilos.</p>
+
+        <!-- Formulario con AJAX -->
+        <form id="cargar_bd_form" action="{% url 'cargar_bd' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Cargar Base de Datos</button>
+        </form>
+
+        <!-- Notificación -->
+        <div class="notification" id="notification"></div>
+
+        <p>Haz clic en el botón para buscar vinilos.</p>
+        <form action="{% url 'buscar_vinilos' %}" method="get">
+            <input type="text" name="consulta" placeholder="Escribe el título del vinilo">
+            <button type="submit">Buscar</button>
+        </form>
+        <p>Haz clic en el botón para buscar vinilos por artista.</p>
+        <form action="{% url 'buscar_por_artista' %}" method="get">
+            <input type="text" name="consulta" placeholder="Escribe el título del artista">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <h2>Filtrar vinilos</h2>
+        <form method="get" action="">
+            <div class="mb-3">
+                <label for="min_precio" class="form-label">Precio mínimo (€):</label>
+                <input type="number" name="min_precio" id="min_precio" class="form-control" value="{{ min_precio }}" placeholder="Mínimo">
+            </div>
+
+            <div class="mb-3">
+                <label for="max_precio" class="form-label">Precio máximo (€):</label>
+                <input type="number" name="max_precio" id="max_precio" class="form-control" value="{{ max_precio }}" placeholder="Máximo">
+            </div>
+
+            <div class="mb-3">
+                <label for="stock" class="form-label">Disponibilidad:</label>
+                <select name="stock" id="stock" class="form-select">
+                    <option value="" {% if stock == "" %}selected{% endif %}>Todos</option>
+                    <option value="disponible" {% if stock == "disponible" %}selected{% endif %}>Disponible</option>
+                    <option value="no_disponible" {% if stock == "no_disponible" %}selected{% endif %}>No disponible</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="orden" class="form-label">Ordenar:</label>
+                <select name="orden" id="orden" class="form-select">
+                    <option value="" {% if orden == "" %}selected{% endif %}>Sin ordenar</option>
+                    <option value="asc" {% if orden == "asc" %}selected{% endif %}>Ascendente</option>
+                    <option value="desc" {% if orden == "desc" %}selected{% endif %}>Descendente</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success">Aplicar filtros</button>
+        </form>
+
+        <h2>Resultados</h2>
+        <div class="row">
+            {% for vinilo in vinilos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <a href="{{ vinilo.enlace }}" target="_blank">
+                            <img src="{{ vinilo.imagen }}" class="card-img-top" alt="{{ vinilo.titulo }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vinilo.titulo }}</h5>
+                            <p class="card-text"><strong>Precio:</strong> {{ vinilo.precio }} €</p>
+                            <p class="card-text">
+                                <strong>Estado:</strong>
+                                {% if vinilo.stock == "Agotado" %}
+                                    No disponible
+                                {% else %}
+                                    Disponible
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No hay vinilos que coincidan con los filtros aplicados.</p>
+            {% endfor %}
+        </div>
+        
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
