@@ -22,6 +22,7 @@
         <input type="text" name="consulta" placeholder="Escribe el título del artista">
         <button type="submit">Buscar</button>
     </form>
+
     <h2>Filtrar vinilos por precio</h2>
     <form method="get" action="{% url 'index' %}">
         <label for="min_precio">Precio mínimo (€):</label>
@@ -45,13 +46,20 @@
     <div>
         {% for vinilo in vinilos %}
             <div class="vinilo">
-                <h3>{{ vinilo.titulo }}</h3>
+                <strong>{{ vinilo.titulo }}</strong>
                 <p><strong>Precio:</strong> {{ vinilo.precio }}</p>
-                <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" width="100">
+                <!-- Verificar si 'vinilo.enlace' tiene valor -->
+                {% if vinilo.enlace %}
+                    <a href="{{ vinilo.enlace }}" target="_blank">
+                        <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" width="100">
+                    </a>
+                {% else %}
+                    <p>No hay enlace disponible para este vinilo.</p>
+                {% endif %}
             </div>
         {% empty %}
             <p>No hay vinilos disponibles en el índice.</p>
         {% endfor %}
-    </div>
+    </div>    
 </body>
 </html>

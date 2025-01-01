@@ -104,7 +104,6 @@ def obtener_todos_los_vinilos():
     vinilos = []
     
     with ix.searcher() as searcher:
-        # Obtenemos todos los documentos sin ningún filtro (limit=None)
         results = searcher.all_stored_fields()
         
         for result in results:
@@ -112,6 +111,7 @@ def obtener_todos_los_vinilos():
                 "titulo": result["titulo"],
                 "precio": result["precio"],
                 "imagen": result["imagen"],
+                "enlace": result["enlace"],
             })
     
     return vinilos
@@ -139,6 +139,7 @@ def obtener_vinilos_por_precio(min_precio=None, max_precio=None):
                 "titulo": result["titulo"],
                 "precio": result["precio"],
                 "imagen": result["imagen"],
+                "enlace": result["enlace"],
             })
     
     return vinilos
