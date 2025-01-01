@@ -19,34 +19,34 @@
         }
     </style>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Mostrar notificación
-            function showNotification(message, success=true) {
+            function showNotification(message, success = true) {
                 const notification = $('#notification');
                 notification.text(message);
                 notification.css('background-color', success ? '#4caf50' : '#f44336');
                 notification.fadeIn();
-                setTimeout(function() {
+                setTimeout(function () {
                     notification.fadeOut();
                 }, 3000);
             }
 
             // Enviar formulario con AJAX
-            $('form#cargar_bd_form').submit(function(event) {
-                event.preventDefault();  // Detener el envío del formulario
+            $('form#cargar_bd_form').submit(function (event) {
+                event.preventDefault(); // Detener el envío del formulario
                 
                 $.ajax({
                     type: 'POST',
                     url: $(this).attr('action'),
                     data: $(this).serialize(),
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status === 'success') {
                             showNotification(response.message, true);
                         } else {
                             showNotification(response.message, false);
                         }
                     },
-                    error: function() {
+                    error: function () {
                         showNotification('Hubo un error al realizar la solicitud.', false);
                     }
                 });
@@ -67,44 +67,42 @@
     <!-- Notificación -->
     <div class="notification" id="notification"></div>
 
-    <p>Haz clic en el botón para buscar vinilos.</p>
-    <form action="{% url 'buscar_vinilos' %}" method="get">
-        <input type="text" name="consulta" placeholder="Escribe el título del vinilo">
-        <button type="submit">Buscar</button>
-    </form>
-
-    <p>Haz clic en el botón para buscar vinilos por artista.</p>
-    <form action="{% url 'buscar_por_artista' %}" method="get">
-        <input type="text" name="consulta" placeholder="Escribe el título del artista">
-        <button type="submit">Buscar</button>
-    </form>
-
-    <h2>Filtrar vinilos por precio</h2>
-    <form method="get" action="{% url 'index' %}">
+    <h2>Filtrar vinilos</h2>
+    <form method="get" action="">
         <label for="min_precio">Precio mínimo (€):</label>
-        <input type="text" name="min_precio" value="{{ min_precio }}" placeholder="Precio mínimo">
-        
+        <input type="number" name="min_precio" id="min_precio" value="{{ min_precio }}" placeholder="Mínimo">
+
         <label for="max_precio">Precio máximo (€):</label>
-        <input type="text" name="max_precio" value="{{ max_precio }}" placeholder="Precio máximo">
-        
-        <button type="submit">Filtrar</button>
+        <input type="number" name="max_precio" id="max_precio" value="{{ max_precio }}" placeholder="Máximo">
+
+        <label for="stock">Disponibilidad:</label>
+        <select name="stock" id="stock">
+            <option value="" {% if stock == "" %}selected{% endif %}>Todos</option>
+            <option value="disponible" {% if stock == "disponible" %}selected{% endif %}>Disponible</option>
+            <option value="no_disponible" {% if stock == "no_disponible" %}selected{% endif %}>No disponible</option>
+        </select>
+
+        <label for="orden">Ordenar:</label>
+        <select name="orden" id="orden">
+            <option value="" {% if orden == "" %}selected{% endif %}>Sin ordenar</option>
+            <option value="asc" {% if orden == "asc" %}selected{% endif %}>Ascendente</option>
+            <option value="desc" {% if orden == "desc" %}selected{% endif %}>Descendente</option>
+        </select>
+
+        <button type="submit">Aplicar filtros</button>
     </form>
 
-    <h2>Ordenar vinilos por precio</h2>
-    <form method="get" action="{% url 'index' %}">
-        <input type="hidden" name="min_precio" value="{{ min_precio }}">
-        <input type="hidden" name="max_precio" value="{{ max_precio }}">
-        <button type="submit" name="orden" value="asc">Ordenar por precio (Ascendente)</button>
-        <button type="submit" name="orden" value="desc">Ordenar por precio (Descendente)</button>
-    </form>
-
-    <h2>Todos los vinilos</h2>
+    <h2>Resultados</h2>
     <div>
         {% for vinilo in vinilos %}
             <div class="vinilo">
                 <strong>{{ vinilo.titulo }}</strong>
-                <p><strong>Precio:</strong> {{ vinilo.precio }}</p>
-                <!-- Verificar si 'vinilo.enlace' tiene valor -->
+                <p><strong>Precio:</strong> {{ vinilo.precio }} €</p>
+                {% if vinilo.stock == "Agotado" %}
+                    <p><strong>Estado:</strong> No disponible</p>
+                {% else %}
+                    <p><strong>Estado:</strong> Disponible</p>
+                {% endif %}
                 {% if vinilo.enlace %}
                     <a href="{{ vinilo.enlace }}" target="_blank">
                         <img src="{{ vinilo.imagen }}" alt="{{ vinilo.titulo }}" width="100">
@@ -114,8 +112,8 @@
                 {% endif %}
             </div>
         {% empty %}
-            <p>No hay vinilos disponibles en el índice.</p>
+            <p>No hay vinilos que coincidan con los filtros aplicados.</p>
         {% endfor %}
-    </div>    
+    </div>
 </body>
 </html>

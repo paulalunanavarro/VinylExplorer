@@ -48,6 +48,7 @@ def almacenar_datos():
             enlace=vinilo["enlace"],
             fecha_indexado=datetime.now()
         )
+        
     
     writer.commit()
     print(f"Se han indexado {len(vinilos)} vinilos en el índice.")
@@ -140,6 +141,7 @@ def obtener_vinilos_por_precio(min_precio=None, max_precio=None):
                 "precio": result["precio"],
                 "imagen": result["imagen"],
                 "enlace": result["enlace"],
+                "stock": result["stock"],
             })
     
     return vinilos

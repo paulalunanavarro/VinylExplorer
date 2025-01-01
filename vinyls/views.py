@@ -5,12 +5,13 @@ from . import indice
 
 
 def index(request):
-    # Obtener los valores de min_precio, max_precio y orden desde la solicitud GET
+    # Obtener parámetros de la solicitud
     min_precio = request.GET.get('min_precio', None)
     max_precio = request.GET.get('max_precio', None)
     orden = request.GET.get('orden', None)
+    stock = request.GET.get('stock', '')
 
-    # Convertir a números si los valores son proporcionados
+    # Convertir min_precio y max_precio a float si son válidos
     if min_precio:
         try:
             min_precio = float(min_precio)
@@ -22,16 +23,29 @@ def index(request):
         except ValueError:
             max_precio = None
 
-    # Obtener los vinilos, aplicando el filtro de precios si es necesario
+    # Obtener todos los vinilos filtrados por precio (sin stock filtrado aún)
     vinilos = indice.obtener_vinilos_por_precio(min_precio, max_precio)
-    
-    # Ordenar los vinilos según el parámetro 'orden'
+
+    # Filtrar por stock si se especifica 'disponible' o 'no_disponible'
+    if stock == 'disponible':
+        vinilos = [vinilo for vinilo in vinilos if vinilo.get('stock', '').strip() != 'Agotado']
+    elif stock == 'no_disponible':
+        vinilos = [vinilo for vinilo in vinilos if vinilo.get('stock', '').strip() == 'Agotado']
+
+    # Ordenar los vinilos si se especifica
     if orden == 'asc':
         vinilos = sorted(vinilos, key=lambda x: float(x['precio'].replace('€', '').replace(',', '.')))
     elif orden == 'desc':
         vinilos = sorted(vinilos, key=lambda x: float(x['precio'].replace('€', '').replace(',', '.')), reverse=True)
 
-    return render(request, 'index.html', {'vinilos': vinilos, 'min_precio': min_precio, 'max_precio': max_precio, 'orden': orden})
+    # Devolver los resultados filtrados
+    return render(request, 'index.html', {
+        'vinilos': vinilos,
+        'min_precio': min_precio,
+        'max_precio': max_precio,
+        'orden': orden,
+        'stock': stock,
+    })
 
 
 def cargar_bd(request):
