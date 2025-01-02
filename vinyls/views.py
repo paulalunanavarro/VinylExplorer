@@ -83,3 +83,29 @@ def buscar_por_artista(request):
         'consulta': consulta,
         'resultados': resultados,
     })
+
+
+def tres_discos_caros(request):
+    consulta = request.GET.get('consulta', '').strip()
+    resultados = []
+
+    if consulta:  
+        resultados = indice.obtener_tres_discos_caros(consulta)
+    
+    return render(request, 'tres_discos_caros.html', {
+        'consulta': consulta,
+        'resultados': resultados,
+    })
+    
+    
+def tres_discos_baratos(request):
+    consulta = request.GET.get('consulta', '').strip()
+    resultados = []
+
+    if consulta:  
+        resultados = indice.obtener_tres_discos_baratos(consulta)
+    
+    return render(request, 'tres_discos_baratos.html', {
+        'consulta': consulta,
+        'resultados': resultados,
+    })

@@ -147,6 +147,41 @@ def obtener_vinilos_por_precio(min_precio=None, max_precio=None):
     return vinilos
 
 
+def obtener_tres_discos_caros():
+    ix = open_dir("Index")
+    vinilos = []
+
+    with ix.searcher() as searcher:
+        results = searcher.all_stored_fields()  
+        for result in results:
+            try:
+                precio = float(result["precio"].replace('€', '').replace(',', '.').strip())
+                vinilos.append({**result, "precio": precio})
+            except ValueError:
+                continue  
+
+    vinilos_ordenados = sorted(vinilos, key=lambda vinilo: vinilo["precio"], reverse=True)
+    return vinilos_ordenados[:3]
+
+
+def obtener_tres_discos_baratos():
+    ix = open_dir("Index")
+    vinilos = []
+
+    with ix.searcher() as searcher:
+        results = searcher.all_stored_fields()  
+        for result in results:
+            try:
+                precio = float(result["precio"].replace('€', '').replace(',', '.').strip())
+                vinilos.append({**result, "precio": precio})
+            except ValueError:
+                continue  
+
+    vinilos_ordenados = sorted(vinilos, key=lambda vinilo: vinilo["precio"])
+    print(f"Vinilos ordenados por precio (de menor a mayor): {vinilos_ordenados[:3]}")  # Verifica los primeros 5
+    return vinilos_ordenados[:3]
+
+
 if __name__ == "__main__":
     almacenar_datos()  # Descomentar si necesitas indexar los datos
     consulta = input("Introduce una consulta para buscar vinilos por título: ")
