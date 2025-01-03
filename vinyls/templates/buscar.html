@@ -14,12 +14,17 @@
                     <strong>Artista:</strong> {{ vinilo.artista }}<br>
                     <strong>Precio:</strong> {{ vinilo.precio }}<br>
                     <strong>Descripción:</strong> {{ vinilo.descripcion }}<br>
-                    <strong>Stock:</strong> {{ vinilo.stock }}<br>  
-                    <strong>Imagen:</strong><br>
-                    <img src="{{ vinilo.imagen }}" alt="Imagen del vinilo" width="150"><br>
+                    <strong>Stock:</strong> {{ vinilo.stock }}<br>
+                    <img src="{{ vinilo.imagen|default:'default_image_url.jpg' }}" alt="Imagen del vinilo" width="150"><br>
                     <a href="{{ vinilo.enlace }}" target="_blank">
                         <button type="button">Comprar Producto</button>
                     </a>
+                    
+                    <h3>Vinilos Similares</h3>
+                    <ul class="vinilos-similares" data-titulo="{{ vinilo.titulo }}">
+                        <!-- Aquí se cargarán los vinilos similares -->
+                        <li>Cargando vinilos similares...</li>
+                    </ul>
                 </li>
                 <hr>
             {% endfor %}
@@ -28,3 +33,49 @@
         <p>No se encontraron resultados para "{{ consulta }}"</p>
     {% endif %}
 {% endblock %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Selecciona todos los contenedores de vinilos similares
+        document.querySelectorAll('.vinilos-similares').forEach(container => {
+            const viniloTitulo = container.dataset.titulo; // Obtiene el título del vinilo desde el atributo 'data-titulo'
+            console.log('viniloTitulo:', viniloTitulo);  // Añadir log para depuración
+        
+            // Si el viniloTitulo es válido (no está vacío o undefined)
+            if (viniloTitulo) {
+                // Realiza la solicitud al endpoint de vinilos similares, pasando el título como parámetro
+                fetch(`/vinilos_similares/?titulo=${encodeURIComponent(viniloTitulo)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        container.innerHTML = ''; // Limpia el contenido inicial
+            
+                        if (data.vinilos_similares && data.vinilos_similares.length > 0) {
+                            // Recorre y añade cada vinilo similar
+                            data.vinilos_similares.forEach(similar => {
+                                const item = document.createElement('li');
+                                
+                                // Crear un enlace alrededor de la imagen
+                                item.innerHTML = `
+                                    <a href="${similar.enlace}" target="_blank">
+                                        <strong>${similar.titulo}</strong><br>
+                                        <strong>Artista:</strong> ${similar.artista}<br>
+                                        <strong>Precio:</strong> ${similar.precio}<br>
+                                        <img src="${similar.imagen}" alt="Imagen del vinilo" width="100"><br>
+                                    </a>
+                                `;
+                                container.appendChild(item);
+                            });
+                        } else {
+                            container.innerHTML = '<li>No hay vinilos similares disponibles.</li>';
+                        }
+                    })
+                    .catch(error => {
+                        container.innerHTML = '<li>Error al cargar vinilos similares.</li>';
+                        console.error('Error al cargar vinilos similares:', error);
+                    });
+            } else {
+                console.error('Error: viniloTitulo no disponible.');
+            }
+        });
+    });
+</script>

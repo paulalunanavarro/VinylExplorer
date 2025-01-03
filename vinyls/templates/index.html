@@ -151,6 +151,11 @@
                                     Disponible
                                 {% endif %}
                             </p>
+                            <p class="card-text">
+                                <a href="{% url 'mostrar_similares' vinilo.titulo|urlencode %}" class="btn btn-secondary">
+                                    <strong>Haz click aquí para ver vinilos similares</strong>
+                                </a>
+                            </p>
                         </div>
                     </div>
                 </div>

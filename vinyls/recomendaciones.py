@@ -20,6 +20,9 @@ def obtener_vinilos_bd():
         vinilos_data.append({
             "titulo": vinilo.titulo,
             "descripcion": vinilo.descripcion,
+            "precio": vinilo.precio,
+            "imagen": vinilo.imagen,
+            "enlace": vinilo.enlace,
             "artista": vinilo.artista,
         })
     
