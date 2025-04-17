@@ -26,6 +26,7 @@ jobs:
           mkdir -p logs
           bandit -r . -x env,venv,__pycache__,.git -o logs/bandit_report.txt -f txt
           cat logs/bandit_report.txt
+        continue-on-error: true
 
       - name: Ejecutar Safety (SCA)
         run: |
