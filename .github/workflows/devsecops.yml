@@ -1,0 +1,33 @@
+name: DevSecOps Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install bandit safety
+
+      - name: Ejecutar Bandit (SAST)
+        run: |
+          mkdir -p logs
+          bandit -r . -x env,venv,__pycache__,.git -o logs/bandit_report.txt -f txt
+          cat logs/bandit_report.txt
+
+      - name: Ejecutar Safety (SCA)
+        run: |
+          safety check -r requirements.txt > logs/safety_report.txt
+          cat logs/safety_report.txt

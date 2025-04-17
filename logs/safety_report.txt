@@ -1,0 +1,57 @@
++==============================================================================+
+
+                               /$$$$$$            /$$
+                              /$$__  $$          | $$
+           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$
+          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$
+         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$
+          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$
+          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$
+         |_______/  \_______/|__/     \_______/   \___/   \____  $$
+                                                          /$$  | $$
+                                                         |  $$$$$$/
+  by pyup.io                                              \______/
+
++==============================================================================+
+
+ [1mREPORT[0m 
+
+  Safety [1mv2.3.5[0m is scanning for [1mVulnerabilities[0m[1m...[0m
+[1m  Scanning dependencies[0m in your [1mfiles:[0m
+
+  -> requirements.txt
+
+  Using [1mnon-commercial database[0m
+[1m  Found and scanned 17 packages[0m
+  Timestamp [1m2025-04-17 13:49:45[0m
+[1m  1[0m[1m vulnerability found[0m
+[1m  0[0m[1m vulnerabilities ignored[0m
+
++==============================================================================+
+ [31m[1mVULNERABILITIES FOUND[0m 
++==============================================================================+
+
+[31m-> Vulnerability found in django version 5.1.4
+[0m[1m   Vulnerability ID: [0m74985
+[1m   Affected spec: [0m>=5.1.0,<5.1.5
+[1m   ADVISORY: [0mAffected versions of Django are vulnerable to a potential
+   denial-of-service attack due to improper IPv6 validation. The lack of upper
+   limit enforcement for input strings in clean_ipv6_address,
+   is_valid_ipv6_address, and the django.forms.GenericIPAddressField form field
+   allowed attackers to exploit overly long inputs, causing resource exhaustion.
+   The vulnerability is addressed by defining a max_length of 39 characters for
+   affected form fields. The django.db.models.GenericIPAddressField model field
+   was not impacted. Users should upgrade promptly.
+[1m   CVE-2024-56374[0m
+[1m   For more information, please visit
+   [0mhttps://data.safetycli.com/v/74985/f17[0m
+
+ Scan was completed. 1 vulnerability was found. 
+
++==============================================================================+
+[32m[1m   REMEDIATIONS[0m
+
+  1 vulnerability was found in 1 package. For detailed remediation & fix 
+  recommendations, upgrade to a commercial license. 
+
++==============================================================================+[0m
