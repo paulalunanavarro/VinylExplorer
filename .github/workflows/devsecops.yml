@@ -34,3 +34,12 @@ jobs:
           safety check -r requirements.txt > logs/safety_report.txt
           cat logs/safety_report.txt
         continue-on-error: true
+
+      - name: Ejecutar Semgrep (IAST)
+        run: |
+          pip install semgrep
+          mkdir -p logs
+          semgrep --config auto --json > logs/semgrep_report.json
+          cat logs/semgrep_report.json
+        continue-on-error: true
+
