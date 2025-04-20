@@ -50,10 +50,9 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/zap/wrk:rw \
             --user $(id -u):$(id -g) \
-            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://127.0.0.1:8000 -g gen.conf -r logs/zap_report.html || true
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:8000 -g gen.conf -r logs/zap_report.html || true
         continue-on-error: true
       
-  
 
       - name: Guardar informes como artifacts
         uses: actions/upload-artifact@v4
