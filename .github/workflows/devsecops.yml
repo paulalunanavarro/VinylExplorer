@@ -43,18 +43,16 @@ jobs:
           cat logs/semgrep_report.json
         continue-on-error: true
 
-      - name: Ejecutar servidor Django en segundo plano
-        run: |
-          nohup python manage.py runserver 0.0.0.0:8000 &sleep 10
-      
       - name: Ejecutar OWASP ZAP (DAST)
         run: |
           mkdir -p logs
+          sleep 20  # Aumentar el tiempo de espera
           docker run --rm \
             -v ${{ github.workspace }}:/zap/wrk:rw \
             --user $(id -u):$(id -g) \
-            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:8000 -g gen.conf -r logs/zap_report.html || true
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://127.0.0.1:8000 -g gen.conf -r logs/zap_report.html || true
         continue-on-error: true
+      
   
 
       - name: Guardar informes como artifacts
