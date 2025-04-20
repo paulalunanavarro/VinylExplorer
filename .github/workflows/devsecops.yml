@@ -46,12 +46,16 @@ jobs:
       - name: Ejecutar servidor Django en segundo plano
         run: |
           nohup python manage.py runserver 0.0.0.0:8000 &sleep 10
-
+      
       - name: Ejecutar OWASP ZAP (DAST)
         run: |
           mkdir -p logs
-          docker run --rm -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:8000 -g gen.conf -r logs/zap_report.html || true
+          docker run --rm \
+            -v ${{ github.workspace }}:/zap/wrk:rw \
+            --user $(id -u):$(id -g) \
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:8000 -g gen.conf -r logs/zap_report.html || true
         continue-on-error: true
+  
 
       - name: Guardar informes como artifacts
         uses: actions/upload-artifact@v4
