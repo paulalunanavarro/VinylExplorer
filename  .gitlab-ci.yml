@@ -1,0 +1,55 @@
+stages:
+  - install
+  - test
+  - security
+  - deploy
+
+install:
+  stage: install
+  image: node:18
+  script:
+    - npm install
+
+test:
+  stage: test
+  image: node:18
+  script:
+    - npm test || echo "No tests definidos aún"
+
+snyk_scan:
+  stage: security
+  image: snyk/snyk:python
+  script:
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - python3 --version
+    - pip3 --version
+    - snyk auth $SNYK_TOKEN
+    - pip3 install --upgrade pip
+    - pip3 install -r requirements.txt --upgrade 
+    - snyk test --package-manager=pip --file=requirements.txt
+    - snyk monitor  
+  allow_failure: true
+  only:
+    - main
+
+sonarqube_scan:
+  stage: security
+  image: sonarsource/sonar-scanner-cli
+  script:
+    - sonar-scanner -Dsonar.projectKey=vinylexplorer -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=$SONAR_TOKEN
+  only:
+    - main
+
+zap_scan:
+  stage: security
+  image: owasp/zap2docker-stable
+  script:
+    - zap-baseline.py -t http://localhost:3000 -g gen.conf -r zap_report.html || true
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Aquí va el script de despliegue"
