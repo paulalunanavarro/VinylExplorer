@@ -48,7 +48,7 @@ jobs:
         run: |
           mkdir -p logs
           docker run --rm \
-            -u root \  # << esto fuerza permisos para escritura
+            -u root \ 
             -v ${{ github.workspace }}/logs:/zap/wrk:rw \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t https://vinylexplorer.onrender.com \
