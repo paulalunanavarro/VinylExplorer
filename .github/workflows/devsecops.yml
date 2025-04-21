@@ -48,11 +48,12 @@ jobs:
         run: |
           mkdir -p logs
           docker run --rm \
-            -u root \ 
+            -u root \
             -v ${{ github.workspace }}/logs:/zap/wrk:rw \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t https://vinylexplorer.onrender.com \
             -r zap_report.html || true
+        continue-on-error: true
 
       - name: Guardar informes como artifacts
         uses: actions/upload-artifact@v4
