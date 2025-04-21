@@ -3,7 +3,7 @@
 import os
 import sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "VinylExplorer.settings")
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vinyls_project.settings') 
 
 
 def main():
