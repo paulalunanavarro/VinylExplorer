@@ -1,1 +1,2 @@
-web: gunicorn VinylExplorer.wsgi
+web: gunicorn vinyls_project.wsgi:application
+
