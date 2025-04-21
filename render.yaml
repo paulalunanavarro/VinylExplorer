@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: vinyl-explorer
+    env: python
+    plan: free
+    branch: main
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn vinylexplorer.wsgi:application --bind 0.0.0.0:8000
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: vinylexplorer.settings
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: SECRET_KEY
+        value: pon_aqui_una_clave_secreta_segura
